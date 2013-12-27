@@ -7,10 +7,10 @@ Gem::Specification.new do |spec|
   spec.name          = 'dsl_block'
   spec.version       = DslBlock::VERSION
   spec.authors       = ['Frank Hall']
-  spec.email         = ['C_Hall.Frank@cerner.com']
-  spec.summary       = %q{DslBlock}
-  spec.description   = %q{DslBlock}
-  spec.homepage      = ''
+  spec.email         = ['ChapterHouse.Dune@gmail.com']
+  spec.summary       = %q{Quick and simple DSL creator.}
+  spec.description   = %q{DslBlock is a quick and simple DSL creator.}
+  spec.homepage      = 'http://chapterhouse.github.io/dsl_block'
   spec.license       = 'MIT'
 
   spec.files         = `git ls-files`.split($/)
