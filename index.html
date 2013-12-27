@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Dsl block : " />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Dsl block</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/ChapterHouse/dsl_block">View on GitHub</a>
+
+          <h1 id="project_title">Dsl block</h1>
+          <h2 id="project_tagline"></h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/ChapterHouse/dsl_block/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/ChapterHouse/dsl_block/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a name="dslblock" class="anchor" href="#dslblock"><span class="octicon octicon-link"></span></a>DslBlock</h1>
+
+<p>DslBlock allows you to use classes to define blocks with commands for a Domain Specific Language. The commands are automatically relayed to your instance method.</p>
+
+<h2>
+<a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h2>
+
+<p>Add this line to your application's Gemfile:</p>
+
+<pre><code>gem 'dsl_block'
+</code></pre>
+
+<p>And then execute:</p>
+
+<pre><code>$ bundle
+</code></pre>
+
+<p>Or install it yourself as:</p>
+
+<pre><code>$ gem install dsl_block
+</code></pre>
+
+<h2>
+<a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h2>
+
+<pre><code>class Foo &lt; DslBlock
+  commands :show_foo
+  def show_foo(x)
+    puts "Mr. T says you are a foo times #{x.to_i}"
+  end
+end
+
+class Bar &lt; DslBlock
+  commands :show_bar
+  def show_bar(x)
+    puts "Ordering #{x.to_i} Shirley Temples from the bar"
+  end
+end
+
+class Baz &lt; DslBlock
+  commands :show_baz
+  def show_baz(x)
+    puts "Baz spaz #{x.inspect}"
+  end
+end
+
+Baz.add_command_to(Bar)
+Bar.add_command_to(Foo, true)
+Foo.add_command_to(self)
+
+
+foo do
+  puts self.inspect       # =&gt; #&lt;Foo:0x007f98f187e240 @block=#&lt;Proc:0x...&gt;, @parent=nil&gt;
+  x = 10/10
+  show_foo x              # =&gt; Mr. T says you are a foo times 1
+
+  bar do
+    x *= 2
+    show_bar x            # =&gt; Ordering 2 Shirley Temples from the bar
+    x += 1
+    show_foo x            # =&gt; Mr. T says you are a foo times 3
+
+    baz do
+      x *= 4
+      x /= 3
+      show_baz x          # =&gt; Baz spaz 4
+      begin
+        x += 1
+        show_bar 5        # This will throw a NameError
+      rescue NameError
+        puts 'No bar for us'
+      end
+
+    end
+
+  end
+
+end
+</code></pre>
+
+<h2>
+<a name="contributing" class="anchor" href="#contributing"><span class="octicon octicon-link"></span></a>Contributing</h2>
+
+<ol>
+<li>Fork it</li>
+<li>Create your feature branch (<code>git checkout -b my-new-feature</code>)</li>
+<li>Commit your changes (<code>git commit -am 'Add some feature'</code>)</li>
+<li>Push to the branch (<code>git push origin my-new-feature</code>)</li>
+<li>Create new Pull Request</li>
+</ol>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Dsl block maintained by <a href="https://github.com/ChapterHouse">ChapterHouse</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
