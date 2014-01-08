@@ -124,15 +124,27 @@ describe DslBlock do
       expect{dsl_class1.new}.to raise_error(ArgumentError, 'block must be provided')
     end
 
+    it 'accepts the block in the options hash' do
+      block = Proc.new {}
+      expect{dsl_class1.new(:block => block) }.to_not raise_error
+    end
+
     it 'stores the block for later execution' do
       block = Proc.new {}
       dsl = dsl_class1.new(&block)
       expect(dsl.instance_variable_get(:@block)).to equal(block)
     end
 
+    it 'uses regular block over options block' do
+      block1 = Proc.new {}
+      block2 = Proc.new {}
+      dsl = dsl_class1.new(:block => block1, &block2)
+      expect(dsl.instance_variable_get(:@block)).to equal(block2)
+    end
+
     it 'can also take a parent object' do
       object = Object.new
-      dsl = dsl_class1.new(object) {}
+      dsl = dsl_class1.new(:parent => object) {}
       expect(dsl.instance_variable_get(:@parent)).to equal(object)
     end
 
@@ -167,7 +179,7 @@ describe DslBlock do
 
       it 'shows the dls class commands, the object.public_methods, and the Kernel.methods available to the block passed' do
         array = Array.new
-        dsl1_instance = dsl_class1.new(array) {}
+        dsl1_instance = dsl_class1.new(:parent => array) {}
         expect(dsl1_instance._commands.sort).to eql((Kernel.methods + dsl_class1.commands + array.public_methods).sort.uniq)
       end
 
@@ -216,7 +228,7 @@ describe DslBlock do
     end
 
     it 'also checks with the parent if it is set' do
-      dsl = dsl_class1.new(Array.new) {}
+      dsl = dsl_class1.new(:parent => Array.new) {}
       expect(dsl.respond_to?(:each)).to equal(true)
       expect(dsl.respond_to?(:to_s)).to equal(true)
     end
@@ -231,7 +243,7 @@ describe DslBlock do
     end
 
     it 'relays the call to the parent if it is set' do
-      dsl = dsl_class1.new(Array.new) {}
+      dsl = dsl_class1.new(:parent => Array.new) {}
       expect { dsl.each }.not_to raise_error
     end
 

@@ -1,6 +1,8 @@
 require 'dsl_block/version'
 require 'dsl_block/executor'
 require 'active_support/core_ext/string/inflections'
+require 'active_support/core_ext/array/extract_options'
+
 
 # DslBlock is a base class for defining a Domain Specific Language. Subclasses of DslBlock define the desired dsl.
 # These methods become available to ruby code running in the context of the subclass.
@@ -96,7 +98,7 @@ class DslBlock
     destination.send(:define_method, command_name) do |&block|
       # Create a new instance of our self with the callers 'self' passed in as an optional parent.
       # Immediately after initialization, yield the block.
-      this_class.new(propigate_local_commands ? self : nil, &block).yield
+      this_class.new(:parent => propigate_local_commands ? self : nil, &block).yield
     end
     # Add the new command to the parent if it is a DslBlock.
     destination.commands << command_name if destination.is_a?(Class) && destination < DslBlock
@@ -105,10 +107,11 @@ class DslBlock
   # Create a new DslBlock instance.
   # +parent+:: Optional parent DslBlock or Object that is providing additional commands to the block. (default: nil)
   # +block+:: Required block of code that will be executed when yield is called on the new DslBlock instance.
-  def initialize(parent = nil, &block)
-    raise ArgumentError, 'block must be provided' unless block_given?
-    @block = block
-    @parent = parent
+  def initialize(*args, &block)
+    options = args.extract_options!
+    @block = block_given? ? block : options[:block]
+    raise ArgumentError, 'block must be provided' unless @block
+    @parent = options[:parent]
   end
 
   # This is the entire list of commands that this instance makes available to the block of code to be run.
