@@ -83,8 +83,8 @@ end
 #     ...
 #   end
 # end
-def dsl12(auto_yield=true, propigate12=false,&block)
-  dsl_class2.add_command_to(dsl_class1, propigate12)
+def dsl12(auto_yield=true, propagate12=false, &block)
+  dsl_class2.add_command_to(dsl_class1, :propagate => propagate12)
   command = dsl_class2_command
   dsl = dsl_class1.new do
     self.send(command, &block)
@@ -100,9 +100,9 @@ end
 #     end
 #   end
 # end
-def dsl123(auto_yield=true, propigate12=false, propigate23=false, &block)
-  dsl_class2.add_command_to(dsl_class1, propigate12)
-  dsl_class3.add_command_to(dsl_class2, propigate23)
+def dsl123(auto_yield=true, propagate12=false, propagate23=false, &block)
+  dsl_class2.add_command_to(dsl_class1, :propagate => propagate12)
+  dsl_class3.add_command_to(dsl_class2, :propagate => propagate23)
   command2 = dsl_class2_command
   command3 = dsl_class3_command
   dsl = dsl_class1.new do

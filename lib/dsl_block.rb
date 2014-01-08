@@ -34,7 +34,7 @@ require 'active_support/core_ext/array/extract_options'
 #
 #    # Connect the blocks to each other so they can be easily nested
 #    Baz.add_command_to(Bar)
-#    Bar.add_command_to(Foo, true) # Let Bar blocks also respond to foo methods
+#    Bar.add_command_to(Foo, :propagate => true) # Let Bar blocks also respond to foo methods
 #    Foo.add_command_to(self)
 #
 #    # Use the new DSL
@@ -87,26 +87,32 @@ class DslBlock
   #
   # Params:
   # +destination+:: The object to receive the new method
-  # +propigate_local_commands+:: Allow methods in the destination to be called by the block. (default: false)
-  # +command_name+:: The name of the method to be created or nil to use the default which is based off of the class name. (default: nil)
-  def self.add_command_to(destination, propigate_local_commands=false, command_name=nil)
+  # +options+:: A hash of options configuring the command
+  #
+  # Options:
+  # +:propagate+:: Allow methods in the destination to be called by the block. (default: false)
+  # +:command_name+:: The name of the method to be created or nil to use the default which is based off of the class name. (default: nil)
+  def self.add_command_to(destination, options={})
     # Determine the name of the method to create
-    command_name = (command_name || name).to_s.underscore.to_sym
+    command_name = (options[:command_name] || name).to_s.underscore.to_sym
     # Save a reference to our self so we will have something to call in a bit when self will refer to someone else.
     this_class = self
     # Define the command in the destination.
     destination.send(:define_method, command_name) do |&block|
       # Create a new instance of our self with the callers 'self' passed in as an optional parent.
       # Immediately after initialization, yield the block.
-      this_class.new(:parent => propigate_local_commands ? self : nil, &block).yield
+      this_class.new(:parent => options[:propagate] ? self : nil, &block).yield
     end
     # Add the new command to the parent if it is a DslBlock.
     destination.commands << command_name if destination.is_a?(Class) && destination < DslBlock
   end
 
   # Create a new DslBlock instance.
-  # +parent+:: Optional parent DslBlock or Object that is providing additional commands to the block. (default: nil)
   # +block+:: Required block of code that will be executed when yield is called on the new DslBlock instance.
+  #
+  # Options:
+  # +:parent+:: Optional parent DslBlock or Object that is providing additional commands to the block. (default: nil)
+  # +:block+:: Optional method of passing in a block.
   def initialize(*args, &block)
     options = args.extract_options!
     @block = block_given? ? block : options[:block]

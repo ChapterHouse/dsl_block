@@ -44,7 +44,7 @@ describe DslBlock do
     end
 
     it 'allows for the name of the method to be chosen' do
-      dsl_class2.add_command_to(dsl_class1, nil, :foo)
+      dsl_class2.add_command_to(dsl_class1, :command_name => :foo)
       expect(dsl_class1.instance_methods.include?(:foo)).to be_true
     end
 
@@ -90,8 +90,6 @@ describe DslBlock do
       end
 
       it 'can be true to propagate parent block commands' do
-        target = nil
-
         dsl_class1.send(:define_method, :foo) { |x| 'foo' * x }
         dsl_class1.commands :foo
 
